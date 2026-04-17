@@ -123,7 +123,45 @@ def new_post():
 # SIDEBAR STUFF
 @app.route("/search")
 def search():
-    return "<h1>search comin soon</h1>"
+    """
+    Search posts by keyword (title or description) and optional type filter.
+    Uses request.args for GET params: ?q=keyword&type_filter=need_help
+    Returns filtered posts rendered in search.html template.
+    """
+    # Get search parameters from URL query string
+    query = request.args.get('q', '').strip()
+    type_filter = request.args.get('type_filter', 'all').strip()
+
+    db = get_db()
+
+    # Build base query - join posts with users for author name
+    sql = """
+        SELECT p.*, u.full_name 
+        FROM posts p 
+        JOIN users u ON p.user_id = u.id 
+        WHERE 1=1
+    """
+    params = []
+
+    # Add keyword search on title OR description (LIKE for partial matches)
+    if query:
+        sql += " AND (p.title LIKE ? OR p.description LIKE ?)"
+        params.extend(['%' + query + '%', '%' + query + '%'])
+
+    # Add post_type filter if specified (not 'all')
+    if type_filter != 'all':
+        sql += " AND p.post_type = ?"
+        params.append(type_filter)
+
+    # Order by newest first, no LIMIT for full results
+    sql += " ORDER BY p.created_at DESC"
+
+    # Execute query with parameters (prevents SQL injection)
+    posts = db.execute(sql, params).fetchall()
+    db.close()
+
+    # Render search template with results and current filters
+    return render_template('search.html', posts=posts, query=query, type_filter=type_filter)
 
 
 @app.route("/notifications")
