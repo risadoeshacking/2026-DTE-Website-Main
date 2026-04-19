@@ -4,12 +4,20 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   full_name TEXT NOT NULL,
+  username TEXT UNIQUE,
   email TEXT NOT NULL UNIQUE,
   password_hash TEXT NOT NULL,
   year_level INTEGER,
   bio TEXT,
+  availability TEXT,
+  profile_pic TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
+
+-- Add sample skills for profile
+INSERT OR IGNORE INTO skills (name) VALUES 
+('Python'), ('JavaScript'), ('HTML/CSS'), ('React'), ('Node.js'), 
+('Java'), ('C++'), ('SQL'), ('Git'), ('Docker'), ('UI/UX'), ('Project Management');
 
 -- POSTS
 CREATE TABLE IF NOT EXISTS posts (
@@ -100,7 +108,19 @@ CREATE TABLE IF NOT EXISTS ratings (
   CHECK (rater_id != rated_user_id)
 );
 
+-- NOTIFICATIONS - for collab requests and other events
+CREATE TABLE IF NOT EXISTS notifications (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  type TEXT NOT NULL,  -- e.g. 'new_collab_request', 'request_accepted', 'request_rejected'
+  message TEXT NOT NULL,
+  is_read INTEGER NOT NULL DEFAULT 0,  -- 0 = unread, 1 = read
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 -- Helpful indexes (speed)
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, is_read, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at);
 CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id);
 CREATE INDEX IF NOT EXISTS idx_comments_post_id ON comments(post_id);
