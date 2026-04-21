@@ -1,128 +1,157 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title>{% block title %}Collab Space{% endblock %}</title>
+
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='styles.css') }}"
     />
+
     <style>
       body {
         margin: 0;
-        background: #000;
+        background-color: #000;
         color: #fff;
-        font-family: Arial;
+        font-family: Arial, sans-serif;
       }
-      .sidebar {
+
+      .nav-sidebar {
         position: fixed;
-        left: 0;
-        top: 0;
-        bottom: 0;
+        inset: 0 auto 0 0;
         width: 70px;
         background: #0095dd;
+
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        gap: 30px;
         align-items: center;
+        justify-content: center;
+        gap: 28px;
       }
-      .sidebar a {
-        color: white;
-        padding: 15px;
-        border-radius: 12px;
+
+      .nav-item {
         position: relative;
-        transition: 0.2s;
+        padding: 14px;
+        border-radius: 10px;
+        transition: background 0.2s ease;
       }
-      .sidebar a:hover {
+
+      .nav-item:hover {
         background: rgba(255, 255, 255, 0.2);
       }
-      .sidebar img {
+
+      .nav-icon {
         width: 24px;
         height: 24px;
         filter: brightness(0) invert(1);
       }
-      .tooltip {
+
+      /* Tooltip (kept simple on purpose) */
+      .nav-tooltip {
         position: absolute;
         left: 80px;
         top: 50%;
         transform: translateY(-50%);
+
         background: #333;
-        color: white;
-        padding: 8px 12px;
+        padding: 6px 10px;
         border-radius: 6px;
         font-size: 12px;
-        white-space: nowrap;
+
         opacity: 0;
         pointer-events: none;
-        transition: 0.2s;
-        z-index: 10;
+        transition: opacity 0.2s;
       }
-      .sidebar a:hover .tooltip {
+
+      .nav-item:hover .nav-tooltip {
         opacity: 1;
       }
-      .logo {
+
+      /* Top logo */
+      .app-logo {
         position: fixed;
         top: 20px;
         left: 50%;
         transform: translateX(-50%);
         width: 160px;
         z-index: 100;
-        text-align: center;
       }
-      .main {
+
+      /* Page content */
+      .page-content {
         margin-left: 70px;
         padding: 80px 20px 20px;
         min-height: 100vh;
       }
+
+      /* Responsive tweaks */
       @media (max-width: 768px) {
-        .sidebar {
+        .nav-sidebar {
           width: 60px;
-          gap: 25px;
+          gap: 24px;
         }
-        .main {
-          margin-left: 80px;
+
+        .page-content {
+          margin-left: 60px;
           padding-top: 100px;
         }
-        .logo {
+
+        .app-logo {
           width: 140px;
         }
       }
     </style>
+
     {% block head %}{% endblock %}
   </head>
+
   <body>
     {% if request.endpoint == 'home_feed' %}
     <img
       src="{{ url_for('static', filename='text_logo.png') }}"
-      class="logo"
-      alt="Collab Space"
+      class="app-logo"
+      alt="Collab Space logo"
     />
     {% endif %}
-    <div class="sidebar">
-      <a href="/">
-        <img src="{{ url_for('static', filename='icons/home.svg') }}" alt="" />
-        <div class="tooltip">Home</div>
+
+    <!-- Sidebar -->
+    <nav class="nav-sidebar">
+      <a href="/" class="nav-item">
+        <img
+          src="{{ url_for('static', filename='icons/home.svg') }}"
+          class="nav-icon"
+        />
+        <span class="nav-tooltip">Home</span>
       </a>
-      <a href="/search">
+
+      <a href="/search" class="nav-item">
         <img
           src="{{ url_for('static', filename='icons/search.svg') }}"
-          alt=""
+          class="nav-icon"
         />
-        <div class="tooltip">Search</div>
+        <span class="nav-tooltip">Search</span>
       </a>
-      <a href="/notifications">
+
+      <a href="/notifications" class="nav-item">
         <img
           src="{{ url_for('static', filename='icons/notification.svg') }}"
-          alt=""
+          class="nav-icon"
         />
-        <div class="tooltip">Notifications</div>
+        <span class="nav-tooltip">Notifications</span>
       </a>
-      <a href="/new">
-        <img src="{{ url_for('static', filename='icons/add.svg') }}" alt="" />
-        <div class="tooltip">New Post</div>
+
+      <a href="/new" class="nav-item">
+        <img
+          src="{{ url_for('static', filename='icons/add.svg') }}"
+          class="nav-icon"
+        />
+        <span class="nav-tooltip">New Post</span>
       </a>
-    </div>
-    <div class="main">{% block body %}{% endblock %}</div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="page-content">{% block body %}{% endblock %}</main>
+
     {% block scripts %}{% endblock %}
   </body>
 </html>
