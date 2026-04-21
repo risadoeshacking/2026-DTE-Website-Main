@@ -21,7 +21,6 @@
         inset: 0 auto 0 0;
         width: 70px;
         background: #0095dd;
-
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -46,18 +45,15 @@
         filter: brightness(0) invert(1);
       }
 
-      /* Tooltip (kept simple on purpose) */
       .nav-tooltip {
         position: absolute;
         left: 80px;
         top: 50%;
         transform: translateY(-50%);
-
         background: #333;
         padding: 6px 10px;
         border-radius: 6px;
         font-size: 12px;
-
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.2s;
@@ -67,7 +63,6 @@
         opacity: 1;
       }
 
-      /* Top logo */
       .app-logo {
         position: fixed;
         top: 20px;
@@ -77,14 +72,12 @@
         z-index: 100;
       }
 
-      /* Page content */
       .page-content {
         margin-left: 70px;
         padding: 80px 20px 20px;
         min-height: 100vh;
       }
 
-      /* Responsive tweaks */
       @media (max-width: 768px) {
         .nav-sidebar {
           width: 60px;
@@ -112,44 +105,24 @@
       class="app-logo"
       alt="Collab Space logo"
     />
-    {% endif %}
+    {% endif %} {% set nav_items = [ {'url': '/', 'icon': 'home.svg', 'label':
+    'Home'}, {'url': '/search', 'icon': 'search.svg', 'label': 'Search'},
+    {'url': '/notifications', 'icon': 'notification.svg', 'label':
+    'Notifications'}, {'url': '/new', 'icon': 'add.svg', 'label': 'New Post'} ]
+    %}
 
-    <!-- Sidebar -->
     <nav class="nav-sidebar">
-      <a href="/" class="nav-item">
+      {% for item in nav_items %}
+      <a href="{{ item.url }}" class="nav-item">
         <img
-          src="{{ url_for('static', filename='icons/home.svg') }}"
+          src="{{ url_for('static', filename='icons/' + item.icon) }}"
           class="nav-icon"
         />
-        <span class="nav-tooltip">Home</span>
+        <span class="nav-tooltip">{{ item.label }}</span>
       </a>
-
-      <a href="/search" class="nav-item">
-        <img
-          src="{{ url_for('static', filename='icons/search.svg') }}"
-          class="nav-icon"
-        />
-        <span class="nav-tooltip">Search</span>
-      </a>
-
-      <a href="/notifications" class="nav-item">
-        <img
-          src="{{ url_for('static', filename='icons/notification.svg') }}"
-          class="nav-icon"
-        />
-        <span class="nav-tooltip">Notifications</span>
-      </a>
-
-      <a href="/new" class="nav-item">
-        <img
-          src="{{ url_for('static', filename='icons/add.svg') }}"
-          class="nav-icon"
-        />
-        <span class="nav-tooltip">New Post</span>
-      </a>
+      {% endfor %}
     </nav>
 
-    <!-- Main content -->
     <main class="page-content">{% block body %}{% endblock %}</main>
 
     {% block scripts %}{% endblock %}
